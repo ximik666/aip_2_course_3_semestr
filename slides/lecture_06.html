@@ -1,0 +1,278 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Основы объектно-ориентированного программирования</title><style>
+:root { color-scheme: light; font-family: Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #e8edf0; color: #122d3f; }
+main { min-height: 100vh; display: grid; place-items: center; padding: 24px 24px 72px; }
+.slide { display: none; width: min(1180px, 100%); aspect-ratio: 16 / 9; padding: 5% 6%; background: #fafbfc; overflow: auto; }
+.slide.active { display: flex; flex-direction: column; }
+.slide.cover { background: #122d3f; color: #fff; justify-content: center; }
+h1 { font-size: clamp(26px, 3.4vw, 48px); line-height: 1.16; margin: 0 0 34px; }
+.cover h1 { font-size: clamp(30px, 4.4vw, 62px); }
+p { font-size: clamp(20px, 2.4vw, 34px); line-height: 1.4; margin: 0 0 22px; }
+pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: clamp(15px, 1.8vw, 27px)/1.38 'Courier New', monospace; color: #174b5b; }
+.count { margin-top: auto; padding-top: 20px; font-size: 16px; color: #657e8c; }
+.cover .count { color: #a9cad6; }
+nav { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 10px; background: #fff; border-top: 1px solid #c9d5dc; }
+button { font: inherit; color: #122d3f; border: 1px solid #8ca7b5; padding: 8px 15px; background: white; cursor: pointer; }
+button:focus-visible { outline: 3px solid #008f80; }
+button:disabled { opacity: .45; cursor: default; }
+aside { position: fixed; inset: 8% 8% 90px; background: #fff; padding: 30px; overflow: auto; box-shadow: 0 0 0 100vmax #0008; z-index: 2; }
+aside[hidden] { display: none; }
+aside h2 { margin-top: 0; }
+aside pre { font: 18px/1.6 Arial, sans-serif; color: #122d3f; }
+@media print {
+ @page { size: landscape; margin: 0; }
+ body, main { background: white; padding: 0; display: block; }
+ .slide, .slide.active { display: flex; width: 100vw; height: 100vh; aspect-ratio: auto; break-after: page; padding: 40px 60px; overflow: visible; }
+ nav, aside { display: none !important; }
+ h1 { font-size: 32pt; } p { font-size: 22pt; } pre { font-size: 16pt; }
+}
+</style></head><body><main><section class="slide cover" aria-label="Слайд 1"><h1>Основы объектно-ориентированного программирования</h1><p>Алгоритмизация и программирование<br>2 курс · Лекция 6<br>Python</p><div class="count">1 / 17</div><template>Словари и функции уже образуют работающую программу. Класс позволит сосредоточить правила одной сущности в одном месте. Мы используем композицию и не вводим абстрактные классы, множественное наследование и шаблоны проектирования.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 2"><h1>Результат занятия</h1><p>Создать независимые экземпляры класса</p><p>Объяснить self и назначение __init__</p><p>Проверять данные при создании объекта и добавлении оценки</p><p>Собрать класс-контейнер из объектов другого класса</p><div class="count">2 / 17</div><template>Объединять данные и операции в простых классах Student и GradeBook без сложной иерархии наследования.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 3"><h1>Класс и объект</h1><p>Класс описывает сущность, объект хранит конкретное состояние</p><p>self обозначает текущий экземпляр</p><p>__init__ задаёт начальные атрибуты</p><div class="count">3 / 17</div><template>Класс описывает, какие данные и операции объединены одной сущностью. Объект — конкретный экземпляр этого класса. Для журнала студент имеет имя и оценки, а также операции добавления оценки и вычисления среднего. Два студента должны хранить независимые списки.
+
+Метод __init__ инициализирует созданный экземпляр. Первый параметр self обозначает объект, для которого вызывается метод. При Student(&quot;Анна&quot;) имя передаётся параметру name, а self Python связывает с новым экземпляром автоматически. self.name и локальная name — разные роли: первая хранит состояние объекта, вторая существует как параметр вызова.
+
+Класс не делает программу автоматически лучше. Он полезен, когда данные и правила регулярно используются вместе. Для простого вычисления суммы отдельного списка достаточно функции. В этом курсе ООП вводится через конкретную задачу, без требования превращать каждую вспомогательную операцию в класс.
+
+Вопрос: Что означает self.name внутри метода?
+Ответ: Атрибут name конкретного экземпляра, для которого выполняется метод.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide code" aria-label="Слайд 4"><h1>Класс и объект · пример</h1><pre><code>class Student:
+    def __init__(self, name):
+        self.name = name
+        self.grades = []
+
+anna = Student(&quot;Анна&quot;)
+boris = Student(&quot;Борис&quot;)
+anna.grades.append(5)
+print(anna.name, anna.grades)
+print(boris.name, boris.grades)</code></pre><div class="count">4 / 17</div><template>Ожидаемый вывод:
+Анна [5]
+Борис []
+
+Что означает self.name внутри метода?
+Атрибут name конкретного экземпляра, для которого выполняется метод.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 5"><h1>Методы и ответственность объекта</h1><p>Метод получает доступ к состоянию через self</p><p>Вычислительный контракт сохраняется</p><p>Модель не содержит интерактивного ввода</p><div class="count">5 / 17</div><template>Метод может использовать состояние экземпляра через self. Поэтому average не требует передавать список оценок повторно: он находится в self.grades. Возвращаемое значение при этом подчиняется прежнему контракту: число либо None. Переход к классу не должен незаметно менять смысл вычисления.
+
+Операции ввода и печати оставляем за пределами модели. Метод среднего не спрашивает имя, не читает файл и не формирует меню. Такой класс можно использовать и в консольной программе, и в тесте. Это также упрощает повторное использование уже написанных функций.
+
+Объясните два способа чтения вызова student.average(): «вызвать average для student» и «получить среднее этого студента». Оба помогают понять связь данных и поведения. Если метод никогда не использует состояние объекта, стоит подумать, не лучше ли обычная функция.
+
+Вопрос: Зачем копировать входной список в __init__?
+Ответ: Чтобы последующее изменение списка вызывающим кодом не изменяло оценки объекта.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide code" aria-label="Слайд 6"><h1>Методы и ответственность объекта · пример</h1><pre><code>class Student:
+    def __init__(self, grades):
+        self.grades = grades.copy()
+    def average(self):
+        if not self.grades:
+            return None
+        return sum(self.grades) / len(self.grades)
+
+print(Student([4, 5]).average())
+print(Student([]).average())</code></pre><div class="count">6 / 17</div><template>Ожидаемый вывод:
+4.5
+None
+
+Зачем копировать входной список в __init__?
+Чтобы последующее изменение списка вызывающим кодом не изменяло оценки объекта.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 7"><h1>Проверка состояния</h1><p>Конструктор отклоняет неверные начальные данные</p><p>Методы изменения повторно проверяют вход</p><p>Правила обращения к атрибутам описываются в контракте</p><div class="count">7 / 17</div><template>Объект должен создаваться с допустимыми данными. Если имя пустое, разумнее вызвать исключение при создании, чем получить объект, который позже невозможно корректно отобразить. Нормализацию выполняем до проверки окончательной пустоты: строка из пробелов после очистки не является именем.
+
+Все публичные операции изменения также должны соблюдать правила. Проверка только в __init__ не защитит от добавления неверной оценки через метод. Поэтому общую проверку можно вынести во вспомогательную функцию и вызывать из конструктора и метода добавления. Это уменьшает вероятность расхождения правил.
+
+В учебном проекте атрибуты доступны напрямую, но пользователи класса обязаны менять оценки через add_grade и не менять student_id после включения в журнал. Это договорённость интерфейса. Полное ограничение доступа через свойства и неизменяемые объекты здесь не требуется, чтобы не перегружать тему.
+
+Вопрос: Почему проверка только при создании не гарантирует правильность будущих оценок?
+Ответ: Позднее состояние меняется методами, и каждый такой вход также должен проверяться.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide code" aria-label="Слайд 8"><h1>Проверка состояния · пример</h1><pre><code>class Student:
+    def __init__(self, name):
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError(&quot;Имя не может быть пустым&quot;)
+        self.name = &quot; &quot;.join(name.split())
+
+print(Student(&quot;  Анна   Иванова &quot;).name)
+try:
+    Student(&quot; &quot;)
+except ValueError:
+    print(&quot;Пустое имя отклонено&quot;)</code></pre><div class="count">8 / 17</div><template>Ожидаемый вывод:
+Анна Иванова
+Пустое имя отклонено
+
+Почему проверка только при создании не гарантирует правильность будущих оценок?
+Позднее состояние меняется методами, и каждый такой вход также должен проверяться.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 9"><h1>Общие и индивидуальные атрибуты</h1><p>Состояние экземпляра создаётся через self</p><p>Изменяемый атрибут класса может стать общим</p><p>Независимость проверяется на двух объектах</p><div class="count">9 / 17</div><template>Атрибут, присвоенный внутри __init__ через self, принадлежит экземпляру. Изменяемая коллекция, объявленная прямо в теле класса, может оказаться общей для всех объектов. Это типичная ошибка: grades = [] на уровне класса выглядит удобно, но добавление оценки одним объектом становится видимым другим.
+
+Для индивидуального состояния создаём self.grades = [] в конструкторе. Если начальные оценки передаются параметром, используем grades=None и внутри создаём новый список или копию. Не используем [] как значение параметра по умолчанию: он также может разделяться между вызовами.
+
+Проверка независимости требует минимум двух объектов. Добавьте оценку одному, затем проверьте второй. Тест, создающий только один объект, не способен показать совместное использование состояния. Эта ситуация связывает знания о ссылках на коллекции со структурой классов.
+
+Вопрос: Какой минимальный тест выявляет общий список оценок?
+Ответ: Создать два объекта, изменить список первого и проверить неизменность списка второго.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide code" aria-label="Слайд 10"><h1>Общие и индивидуальные атрибуты · пример</h1><pre><code>class Student:
+    def __init__(self, grades=None):
+        self.grades = [] if grades is None else grades.copy()
+
+a, b = Student(), Student()
+a.grades.append(5)
+assert b.grades == []
+print(a.grades, b.grades)</code></pre><div class="count">10 / 17</div><template>Ожидаемый вывод:
+[5] []
+
+Какой минимальный тест выявляет общий список оценок?
+Создать два объекта, изменить список первого и проверить неизменность списка второго.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 11"><h1>Композиция: журнал содержит студентов</h1><p>Журнал управляет коллекцией студентов</p><p>Студент управляет собственными оценками</p><p>Одна операция делегирует часть работы другой сущности</p><div class="count">11 / 17</div><template>Композиция означает, что один объект хранит другие объекты и использует их операции. GradeBook содержит студентов, индексированных по ID. Журнал отвечает за уникальность ID и поиск записи. Сам студент отвечает за допустимость своих оценок и расчёт среднего.
+
+Разделение ответственности предотвращает дублирование: GradeBook.add_grade находит студента и вызывает его add_grade. Не нужно ещё раз вручную повторять весь алгоритм добавления в журнале. При изменении правила оценок достаточно обновить Student и его тесты.
+
+В короткой демонстрации используем метод get. В итоговом контракте он называется get_student. Имена учебных фрагментов не заменяют спецификацию проекта. Главное здесь — понять, как экземпляр GradeBook хранит ссылки на Student, а не только строки и числа.
+
+Вопрос: Кто должен проверять диапазон оценки: Student или меню?
+Ответ: Модель Student обязана защищать своё правило. Меню отдельно преобразует ввод и показывает сообщение об ошибке.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide code" aria-label="Слайд 12"><h1>Композиция: журнал содержит студентов · пример</h1><pre><code>class Student:
+    def __init__(self, student_id):
+        self.student_id = student_id
+
+class GradeBook:
+    def __init__(self):
+        self.students = {}
+    def add(self, student):
+        self.students[student.student_id] = student
+
+book = GradeBook()
+book.add(Student(&quot;S01&quot;))
+print(book.students[&quot;S01&quot;].student_id)</code></pre><div class="count">12 / 17</div><template>Ожидаемый вывод:
+S01
+
+Кто должен проверять диапазон оценки: Student или меню?
+Модель Student обязана защищать своё правило. Меню отдельно преобразует ввод и показывает сообщение об ошибке.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 13"><h1>Преобразование объекта в словарь</h1><p>to_dict возвращает простые значения для JSON</p><p>Вложенный список копируется</p><p>from_dict создаёт объект через обычный конструктор</p><div class="count">13 / 17</div><template>json не знает, как сохранить произвольный Student. Поэтому объект предоставляет to_dict, возвращающий только простые сериализуемые значения. Схема словаря должна соответствовать формату файла: в семестровом проекте используются id, name, group и grades. При этом имя атрибута student_id может отличаться от ключа id.
+
+Список оценок в возвращённом словаре копируем. Иначе вызывающий код сможет изменить состояние студента через подготовленный экспортный словарь. Обратное преобразование from_dict создаёт новый объект, а конструктор повторно проверяет значения. Это позволяет использовать одни и те же правила для ввода и файла.
+
+from_dict удобно оформить через @classmethod. Его первый параметр cls обозначает сам класс, и cls(...) создаёт экземпляр. Для текущего курса достаточно этого простого применения. Не требуется углубляться в метаклассы или сложные фабрики.
+
+Вопрос: Чем cls в classmethod отличается от self в обычном методе?
+Ответ: cls обозначает класс, self — конкретный экземпляр этого класса.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide code" aria-label="Слайд 14"><h1>Преобразование объекта в словарь · пример</h1><pre><code>class Student:
+    def __init__(self, name):
+        self.name = name
+    def to_dict(self):
+        return {&quot;name&quot;: self.name}
+    @classmethod
+    def from_dict(cls, data):
+        return cls(data[&quot;name&quot;])
+
+student = Student.from_dict({&quot;name&quot;: &quot;Анна&quot;})
+print(student.to_dict())</code></pre><div class="count">14 / 17</div><template>Ожидаемый вывод:
+{&#x27;name&#x27;: &#x27;Анна&#x27;}
+
+Чем cls в classmethod отличается от self в обычном методе?
+cls обозначает класс, self — конкретный экземпляр этого класса.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 15"><h1>Тестирование класса</h1><p>Проверяются результат и состояние</p><p>Копирование требуется только там, где его обещает контракт</p><p>Класс удобно развивать по одному методу</p><div class="count">15 / 17</div><template>Тест класса проверяет и результаты методов, и изменение состояния. Сначала создаём объект с известными данными, выполняем одну операцию и сравниваем состояние или возвращаемое значение. Для неверной операции проверяем исключение и отсутствие изменения.
+
+Особое внимание уделяем независимости: исходный список конструктора, другой экземпляр и словарь to_dict не должны неожиданно менять оценки студента. Журнал, напротив, хранит сам переданный объект Student: это явно описано в семестровом контракте. Нужно различать места, где требуется копия, и места, где общая ссылка является намеренной.
+
+На практике сначала реализуйте минимальный Student, затем добавляйте методы по одному и запускайте проверки. После этого переходите к GradeBook. Одновременная реализация всех файлов затрудняет локализацию ошибки и создаёт лишнюю нагрузку.
+
+Вопрос: Нужно ли копировать Student при добавлении в GradeBook?
+Ответ: В нашем итоговом контракте нет: журнал хранит переданный объект, и get_student возвращает его же.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide code" aria-label="Слайд 16"><h1>Тестирование класса · пример</h1><pre><code>class Student:
+    def __init__(self):
+        self.grades = []
+    def add_grade(self, grade):
+        if type(grade) is not int or not 2 &lt;= grade &lt;= 5:
+            raise ValueError(&quot;Неверная оценка&quot;)
+        self.grades.append(grade)
+
+s = Student()
+s.add_grade(5)
+assert s.grades == [5]
+print(&quot;Метод изменил состояние по контракту&quot;)</code></pre><div class="count">16 / 17</div><template>Ожидаемый вывод:
+Метод изменил состояние по контракту
+
+Нужно ли копировать Student при добавлении в GradeBook?
+В нашем итоговом контракте нет: журнал хранит переданный объект, и get_student возвращает его же.
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section><section class="slide text" aria-label="Слайд 17"><h1>Самопроверка и практика</h1><p>Зачем копировать входной список в __init__?</p><p>Кто должен проверять диапазон оценки: Student или меню?</p><p>Практики 11 и 12: применение материала</p><div class="count">17 / 17</div><template>Перенесите обработку одной записи в класс Student. Добавьте конструктор, add_grade, average и to_dict. Проверьте независимость двух экземпляров и сохранность входного списка.
+
+Справочники:
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod
+
+Учебный конспект: lectures/06/README.md
+https://docs.python.org/3/tutorial/classes.html
+https://docs.python.org/3/library/functions.html#classmethod</template></section></main><nav aria-label="Управление презентацией"><button id="prev" aria-label="Предыдущий слайд">← Назад</button><span id="status" aria-live="polite"></span><button id="next" aria-label="Следующий слайд">Далее →</button><button id="notes" aria-expanded="false">Заметки (N)</button><button id="full">Полный экран (F)</button></nav><aside hidden aria-label="Заметки преподавателя"><button id="close">Закрыть</button><h2>Заметки преподавателя</h2><pre id="note-text"></pre></aside><script>
+const slides = [...document.querySelectorAll('.slide')];
+let index = Math.max(0, Math.min(slides.length-1, (parseInt(location.hash.slice(1),10)||1)-1));
+const notes = document.querySelector('aside');
+function show() {
+ slides.forEach((s,i)=>{s.classList.toggle('active',i===index); s.setAttribute('aria-hidden', i===index?'false':'true');});
+ document.querySelector('#status').textContent = `${index+1} / ${slides.length}`;
+ document.querySelector('#prev').disabled=index===0;
+ document.querySelector('#next').disabled=index===slides.length-1;
+ document.querySelector('#note-text').textContent=slides[index].querySelector('template').content.textContent;
+ history.replaceState(null,'',`#${index+1}`);
+}
+function move(delta){index=Math.max(0,Math.min(slides.length-1,index+delta));show();}
+function toggleNotes(){notes.hidden=!notes.hidden;document.querySelector('#notes').setAttribute('aria-expanded',String(!notes.hidden));}
+function fullscreen(){if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.();}
+document.querySelector('#prev').onclick=()=>move(-1);
+document.querySelector('#next').onclick=()=>move(1);
+document.querySelector('#notes').onclick=toggleNotes;
+document.querySelector('#close').onclick=toggleNotes;
+document.querySelector('#full').onclick=fullscreen;
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!notes.hidden){toggleNotes();return;}
+ if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();move(1);}
+ if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();move(-1);}
+ if(e.key.toLowerCase()==='n')toggleNotes();
+ if(e.key.toLowerCase()==='f')fullscreen();
+});
+show();
+</script></body></html>

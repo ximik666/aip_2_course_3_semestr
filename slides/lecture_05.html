@@ -1,0 +1,287 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ошибки, отладка и автоматические тесты</title><style>
+:root { color-scheme: light; font-family: Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #e8edf0; color: #122d3f; }
+main { min-height: 100vh; display: grid; place-items: center; padding: 24px 24px 72px; }
+.slide { display: none; width: min(1180px, 100%); aspect-ratio: 16 / 9; padding: 5% 6%; background: #fafbfc; overflow: auto; }
+.slide.active { display: flex; flex-direction: column; }
+.slide.cover { background: #122d3f; color: #fff; justify-content: center; }
+h1 { font-size: clamp(26px, 3.4vw, 48px); line-height: 1.16; margin: 0 0 34px; }
+.cover h1 { font-size: clamp(30px, 4.4vw, 62px); }
+p { font-size: clamp(20px, 2.4vw, 34px); line-height: 1.4; margin: 0 0 22px; }
+pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: clamp(15px, 1.8vw, 27px)/1.38 'Courier New', monospace; color: #174b5b; }
+.count { margin-top: auto; padding-top: 20px; font-size: 16px; color: #657e8c; }
+.cover .count { color: #a9cad6; }
+nav { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 10px; background: #fff; border-top: 1px solid #c9d5dc; }
+button { font: inherit; color: #122d3f; border: 1px solid #8ca7b5; padding: 8px 15px; background: white; cursor: pointer; }
+button:focus-visible { outline: 3px solid #008f80; }
+button:disabled { opacity: .45; cursor: default; }
+aside { position: fixed; inset: 8% 8% 90px; background: #fff; padding: 30px; overflow: auto; box-shadow: 0 0 0 100vmax #0008; z-index: 2; }
+aside[hidden] { display: none; }
+aside h2 { margin-top: 0; }
+aside pre { font: 18px/1.6 Arial, sans-serif; color: #122d3f; }
+@media print {
+ @page { size: landscape; margin: 0; }
+ body, main { background: white; padding: 0; display: block; }
+ .slide, .slide.active { display: flex; width: 100vw; height: 100vh; aspect-ratio: auto; break-after: page; padding: 40px 60px; overflow: visible; }
+ nav, aside { display: none !important; }
+ h1 { font-size: 32pt; } p { font-size: 22pt; } pre { font-size: 16pt; }
+}
+</style></head><body><main><section class="slide cover" aria-label="Слайд 1"><h1>Ошибки, отладка и автоматические тесты</h1><p>Алгоритмизация и программирование<br>2 курс · Лекция 5<br>Python</p><div class="count">1 / 17</div><template>В предыдущих занятиях большинство функций получали корректные входы. Теперь добавляем явную проверку пользовательских и файловых данных и заменяем ручное наблюдение повторяемыми тестами.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 2"><h1>Результат занятия</h1><p>Различать синтаксическую, исполнительную и логическую ошибку</p><p>Выбирать ValueError и KeyError по смыслу</p><p>Сохранять прежнее состояние при неудачной операции</p><p>Писать тесты unittest с временными файлами</p><div class="count">2 / 17</div><template>Предсказуемо обрабатывать неверные данные и подтверждать корректность программы тестами.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 3"><h1>Виды ошибок и чтение traceback</h1><p>Исключение и неверный результат требуют разных проверок</p><p>Traceback читается от типа ошибки к строке своего кода</p><p>Минимальный воспроизводимый вход ускоряет поиск</p><div class="count">3 / 17</div><template>Синтаксическая ошибка не позволяет разобрать программу. Ошибка выполнения возникает во время конкретной операции, например при int(&quot;пять&quot;). Логическая ошибка может не вызвать исключения: программа вычисляет неверное среднее, но успешно завершает работу. Для последнего случая нужен известный ожидаемый результат.
+
+Traceback показывает цепочку вызовов и место исключения. Начинайте с последней строки: тип и сообщение. Затем найдите ближайшую строку своего кода. Не пытайтесь исправлять всё сразу. Воспроизведите проблему на коротком входе, определите неверное предположение, внесите изменение и повторите тот же случай.
+
+Печать промежуточных значений полезна в начале обучения, но после исправления отладочный вывод стоит убрать. Иначе тесты и интерфейс будут засорены. При наличии отладчика можно поставить точку останова и посмотреть значения переменных, не меняя программу.
+
+Вопрос: Какой тест обнаружит среднее, посчитанное через деление на len(grades)+1?
+Ответ: Тест с вручную вычисленным ожидаемым средним, например [4, 4] должно давать 4.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide code" aria-label="Слайд 4"><h1>Виды ошибок и чтение traceback · пример</h1><pre><code>try:
+    grade = int(&quot;пять&quot;)
+except ValueError as error:
+    print(type(error).__name__)
+    print(&quot;Нужно целое число, например 5&quot;)</code></pre><div class="count">4 / 17</div><template>Ожидаемый вывод:
+ValueError
+Нужно целое число, например 5
+
+Какой тест обнаружит среднее, посчитанное через деление на len(grades)+1?
+Тест с вручную вычисленным ожидаемым средним, например [4, 4] должно давать 4.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 5"><h1>Проверка данных и raise</h1><p>Контракт определяет допустимые типы и значения</p><p>Проверка предшествует изменению состояния</p><p>Преобразование ввода отделяется от проверки модели</p><div class="count">5 / 17</div><template>Функция должна явно сообщать, что вход не соответствует контракту. ValueError подходит для недопустимого значения. В учебном API мы также договорились использовать его для неподходящего типа входного поля, чтобы новичкам было проще соблюдать один контракт валидации. Это выбранное правило проекта, а не универсальное требование Python.
+
+Оценка допускается только как целое число 2–5. isinstance(True, int) возвращает True, поэтому для этой проверки используем type(value) is int. Преобразование строки &quot;4&quot; в число относится к интерфейсу, а не к модели. Модель принимает уже подготовленное значение и не угадывает намерение вызывающего кода.
+
+Исключение нужно вызвать до изменения данных. Если сначала добавить оценку, а затем проверить диапазон, после ошибки в списке останется неверное значение. Такое повреждение состояния часто проявляется далеко от исходного места ошибки.
+
+Вопрос: Почему int(value) внутри модели может скрыть ошибку?
+Ответ: Он может превратить строку или логическое значение в число, хотя контракт требует исходное целое значение.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide code" aria-label="Слайд 6"><h1>Проверка данных и raise · пример</h1><pre><code>def validate_grade(value):
+    if type(value) is not int or not 2 &lt;= value &lt;= 5:
+        raise ValueError(&quot;Оценка должна быть целым числом 2–5&quot;)
+    return value
+
+print(validate_grade(4))
+try:
+    validate_grade(True)
+except ValueError:
+    print(&quot;Логическое значение отклонено&quot;)</code></pre><div class="count">6 / 17</div><template>Ожидаемый вывод:
+4
+Логическое значение отклонено
+
+Почему int(value) внутри модели может скрыть ошибку?
+Он может превратить строку или логическое значение в число, хотя контракт требует исходное целое значение.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 7"><h1>Обработка ошибок на границе интерфейса</h1><p>Модель сообщает об ошибке, интерфейс объясняет её пользователю</p><p>Перехватываются ожидаемые типы исключений</p><p>Молчаливое подавление мешает обнаружить проблему</p><div class="count">7 / 17</div><template>Низкоуровневая функция сообщает об ошибке через исключение. Интерфейс перехватывает ожидаемый тип и показывает понятное сообщение, после чего может повторить действие. Не следует перехватывать все исключения без разбора: так ошибка программирования замаскируется под обычный неверный ввод.
+
+try должен охватывать тот небольшой участок, где ожидается конкретная ошибка. В примере обработка ввода работает со строками и вызывает чистую функцию parse_grade. Число за пределами диапазона тоже приводит к ValueError. Для пользователя достаточно понятного сообщения, а разработчик сохраняет конкретный контракт.
+
+Не используйте except: pass. Он молча скрывает проблему, и пользователь не понимает, сработала ли команда. Если ошибку нельзя исправить на текущем уровне, разрешите ей подняться выше либо добавьте пояснение через raise ... from error. В семестровом меню перехватываются ValueError, KeyError и OSError.
+
+Вопрос: Почему не стоит оборачивать всю программу в except Exception с сообщением «Неверный ввод»?
+Ответ: Так будут скрыты собственные ошибки программы, не связанные с вводом пользователя.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide code" aria-label="Слайд 8"><h1>Обработка ошибок на границе интерфейса · пример</h1><pre><code>def parse_grade(text):
+    value = int(text.strip())
+    if not 2 &lt;= value &lt;= 5:
+        raise ValueError(&quot;Оценка вне диапазона&quot;)
+    return value
+
+for text in [&quot; 4 &quot;, &quot;пять&quot;, &quot;6&quot;]:
+    try:
+        print(parse_grade(text))
+    except ValueError:
+        print(&quot;Введите целое число от 2 до 5&quot;)</code></pre><div class="count">8 / 17</div><template>Ожидаемый вывод:
+4
+Введите целое число от 2 до 5
+Введите целое число от 2 до 5
+
+Почему не стоит оборачивать всю программу в except Exception с сообщением «Неверный ввод»?
+Так будут скрыты собственные ошибки программы, не связанные с вводом пользователя.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 9"><h1>План тестирования</h1><p>Ожидаемый результат определяется независимо</p><p>Нужны обычные и граничные случаи</p><p>Числа и их строковое оформление проверяются по-разному</p><div class="count">9 / 17</div><template>Тест состоит из подготовки, действия и проверки. Сначала выбираем вход и ожидаемый результат, затем вызываем функцию и сравниваем результат. Ожидание должно следовать из задания и ручного расчёта. Если вычислить его той же формулой с той же ошибкой, тест даст ложное чувство уверенности.
+
+Разбейте входы на категории: обычный случай, пустые данные, границы диапазона, неверные значения и типы. Для оценок отдельные категории — 2 и 5, значения ниже и выше, строка, float и bool. Для списка стоит проверить независимость от исходного контейнера. Один большой сценарий не заменяет небольшие проверки разных правил.
+
+Сравнение чисел с плавающей точкой иногда требует допуска. assertAlmostEqual подходит для среднего, а строки CSV нужно сравнивать точно, потому что формат двух знаков входит в контракт. Выбор проверки зависит от вида результата.
+
+Вопрос: Почему тест [4, 4] полезен даже при наличии теста [5, 4, 5]?
+Ответ: Он даёт простой точный ожидаемый результат и помогает обнаружить ошибки делителя без сложного ручного расчёта.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide code" aria-label="Слайд 10"><h1>План тестирования · пример</h1><pre><code>def average(grades):
+    return sum(grades) / len(grades) if grades else None
+
+assert average([4, 4]) == 4
+assert average([2]) == 2
+assert average([]) is None
+print(&quot;Обычный, граничный и пустой случаи проверены&quot;)</code></pre><div class="count">10 / 17</div><template>Ожидаемый вывод:
+Обычный, граничный и пустой случаи проверены
+
+Почему тест [4, 4] полезен даже при наличии теста [5, 4, 5]?
+Он даёт простой точный ожидаемый результат и помогает обнаружить ошибки делителя без сложного ручного расчёта.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 11"><h1>unittest</h1><p>Тестовые методы начинаются с test_</p><p>Названия описывают проверяемое правило</p><p>Успех требует найденных и выполненных тестов</p><div class="count">11 / 17</div><template>unittest входит в стандартную библиотеку. Тесты оформляются методами класса, наследующего unittest.TestCase. Имена методов начинаются с test_. Проверки assertEqual, assertIsNone и assertRaises дают понятные сообщения о несовпадении. Запуск discovery собирает тесты из файлов test_*.py.
+
+В каждом тесте желательно проверять одно правило, хотя для его проверки может понадобиться несколько утверждений. Название test_empty_average сообщает больше, чем test_1. При нескольких сходных входах subTest позволяет показать, на каком значении возникла ошибка, не останавливая остальные подслучаи.
+
+Ниже запускаем набор программно, чтобы демонстрационный пример выдавал предсказуемую короткую строку. В обычном проекте студент будет использовать python -m unittest discover -s tests -v. Успешный запуск требует, чтобы тесты действительно были обнаружены, а не просто чтобы процесс завершился без исключения.
+
+Вопрос: Почему сообщение «Ran 0 tests» не подтверждает корректность решения?
+Ответ: Не выполнено ни одной проверки; возможно, неправильно названы файлы, методы или указан каталог.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide code" aria-label="Слайд 12"><h1>unittest · пример</h1><pre><code>import unittest
+import io
+
+class GradeTests(unittest.TestCase):
+    def test_sum(self):
+        self.assertEqual(sum([2, 5]), 7)
+    def test_empty(self):
+        self.assertEqual(sum([]), 0)
+
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(GradeTests)
+result = unittest.TextTestRunner(stream=io.StringIO()).run(suite)
+print(result.testsRun, result.wasSuccessful())</code></pre><div class="count">12 / 17</div><template>Ожидаемый вывод:
+2 True
+
+Почему сообщение «Ran 0 tests» не подтверждает корректность решения?
+Не выполнено ни одной проверки; возможно, неправильно названы файлы, методы или указан каталог.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 13"><h1>Проверка исключения и сохранности данных</h1><p>Проверяется конкретный тип исключения</p><p>После ошибки проверяется прежнее состояние</p><p>Загрузка заменяет данные только после полного успеха</p><div class="count">13 / 17</div><template>Отрицательный тест должен проверять именно ожидаемое исключение. Слишком широкая проверка может принять случайный TypeError за правильно выполненную валидацию ValueError. После исключения полезно проверить состояние: неверная операция не должна оставить частичные изменения.
+
+Например, добавление оценки 6 обязано завершиться ValueError, а прежний список [4] должен остаться [4]. Эти два утверждения проверяют разные стороны одного требования. Если функция просто вызывает raise после append, первая проверка пройдёт, а вторая обнаружит ошибку.
+
+Для загрузки журнала действует похожее правило: создаём новый объект, проверяем все записи и только после успешного возврата заменяем текущий журнал в меню. Так обработка неверного файла не уничтожает уже введённые данные.
+
+Вопрос: Почему pass допустим в этом демонстрационном except, но плох для пользовательского меню?
+Ответ: Здесь ошибка ожидается как часть короткого примера и затем проверяется состояние. В меню пользователю нужно объяснить неудачу.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide code" aria-label="Слайд 14"><h1>Проверка исключения и сохранности данных · пример</h1><pre><code>grades = [4]
+
+def add_grade(value):
+    if type(value) is not int or not 2 &lt;= value &lt;= 5:
+        raise ValueError(&quot;Неверная оценка&quot;)
+    grades.append(value)
+
+try:
+    add_grade(6)
+except ValueError:
+    pass
+print(grades)</code></pre><div class="count">14 / 17</div><template>Ожидаемый вывод:
+[4]
+
+Почему pass допустим в этом демонстрационном except, но плох для пользовательского меню?
+Здесь ошибка ожидается как часть короткого примера и затем проверяется состояние. В меню пользователю нужно объяснить неудачу.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 15"><h1>Тестирование файлов</h1><p>Временный каталог изолирует файлы теста</p><p>Проверяется содержимое, а не только наличие</p><p>Каждый тест создаёт собственные исходные данные</p><div class="count">15 / 17</div><template>Файловые тесты должны работать независимо от того, запускались ли они раньше. TemporaryDirectory создаёт временный каталог и удаляет его после блока with. Внутри можно безопасно создавать JSON и CSV, не трогая демонстрационные или пользовательские данные.
+
+Проверяйте содержимое после записи, а не только существование файла. Для CSV полезно читать результат через csv.reader: переводы строк могут различаться по платформам, но строки и поля должны совпадать. Отдельный тест нужен для кавычек и разделителя внутри имени, иначе ручной join может ошибочно выглядеть правильным.
+
+Тест не должен зависеть от сети, случайной даты или порядка запуска других тестов. Если ему нужен файл, он создаёт его сам. Если несколько тестов используют одну подготовку, можно применить setUp, но каждый случай должен получать независимое начальное состояние.
+
+Вопрос: Почему тест не должен записывать результат в постоянный report.csv студента?
+Ответ: Он может повредить рабочие данные и зависеть от предыдущего содержимого файла.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide code" aria-label="Слайд 16"><h1>Тестирование файлов · пример</h1><pre><code>from pathlib import Path
+import tempfile
+
+with tempfile.TemporaryDirectory() as folder:
+    path = Path(folder) / &quot;report.txt&quot;
+    path.write_text(&quot;Анна: 4.50\n&quot;, encoding=&quot;utf-8&quot;)
+    assert path.read_text(encoding=&quot;utf-8&quot;) == &quot;Анна: 4.50\n&quot;
+    print(&quot;Файловая проверка выполнена&quot;)</code></pre><div class="count">16 / 17</div><template>Ожидаемый вывод:
+Файловая проверка выполнена
+
+Почему тест не должен записывать результат в постоянный report.csv студента?
+Он может повредить рабочие данные и зависеть от предыдущего содержимого файла.
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section><section class="slide text" aria-label="Слайд 17"><h1>Самопроверка и практика</h1><p>Почему int(value) внутри модели может скрыть ошибку?</p><p>Почему сообщение «Ran 0 tests» не подтверждает корректность решения?</p><p>Практики 9 и 10: применение материала</p><div class="count">17 / 17</div><template>Добавьте к своей программе проверки неверного ввода и не менее восьми тестов unittest. Для одного исправленного дефекта сохраните тест, который выявлял ошибку до исправления.
+
+Справочники:
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html
+
+Учебный конспект: lectures/05/README.md
+https://docs.python.org/3/tutorial/errors.html
+https://docs.python.org/3/library/unittest.html
+https://docs.python.org/3/library/tempfile.html</template></section></main><nav aria-label="Управление презентацией"><button id="prev" aria-label="Предыдущий слайд">← Назад</button><span id="status" aria-live="polite"></span><button id="next" aria-label="Следующий слайд">Далее →</button><button id="notes" aria-expanded="false">Заметки (N)</button><button id="full">Полный экран (F)</button></nav><aside hidden aria-label="Заметки преподавателя"><button id="close">Закрыть</button><h2>Заметки преподавателя</h2><pre id="note-text"></pre></aside><script>
+const slides = [...document.querySelectorAll('.slide')];
+let index = Math.max(0, Math.min(slides.length-1, (parseInt(location.hash.slice(1),10)||1)-1));
+const notes = document.querySelector('aside');
+function show() {
+ slides.forEach((s,i)=>{s.classList.toggle('active',i===index); s.setAttribute('aria-hidden', i===index?'false':'true');});
+ document.querySelector('#status').textContent = `${index+1} / ${slides.length}`;
+ document.querySelector('#prev').disabled=index===0;
+ document.querySelector('#next').disabled=index===slides.length-1;
+ document.querySelector('#note-text').textContent=slides[index].querySelector('template').content.textContent;
+ history.replaceState(null,'',`#${index+1}`);
+}
+function move(delta){index=Math.max(0,Math.min(slides.length-1,index+delta));show();}
+function toggleNotes(){notes.hidden=!notes.hidden;document.querySelector('#notes').setAttribute('aria-expanded',String(!notes.hidden));}
+function fullscreen(){if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.();}
+document.querySelector('#prev').onclick=()=>move(-1);
+document.querySelector('#next').onclick=()=>move(1);
+document.querySelector('#notes').onclick=toggleNotes;
+document.querySelector('#close').onclick=toggleNotes;
+document.querySelector('#full').onclick=fullscreen;
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!notes.hidden){toggleNotes();return;}
+ if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();move(1);}
+ if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();move(-1);}
+ if(e.key.toLowerCase()==='n')toggleNotes();
+ if(e.key.toLowerCase()==='f')fullscreen();
+});
+show();
+</script></body></html>

@@ -1,0 +1,258 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Словари и вложенные коллекции</title><style>
+:root { color-scheme: light; font-family: Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #e8edf0; color: #122d3f; }
+main { min-height: 100vh; display: grid; place-items: center; padding: 24px 24px 72px; }
+.slide { display: none; width: min(1180px, 100%); aspect-ratio: 16 / 9; padding: 5% 6%; background: #fafbfc; overflow: auto; }
+.slide.active { display: flex; flex-direction: column; }
+.slide.cover { background: #122d3f; color: #fff; justify-content: center; }
+h1 { font-size: clamp(26px, 3.4vw, 48px); line-height: 1.16; margin: 0 0 34px; }
+.cover h1 { font-size: clamp(30px, 4.4vw, 62px); }
+p { font-size: clamp(20px, 2.4vw, 34px); line-height: 1.4; margin: 0 0 22px; }
+pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: clamp(15px, 1.8vw, 27px)/1.38 'Courier New', monospace; color: #174b5b; }
+.count { margin-top: auto; padding-top: 20px; font-size: 16px; color: #657e8c; }
+.cover .count { color: #a9cad6; }
+nav { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 10px; background: #fff; border-top: 1px solid #c9d5dc; }
+button { font: inherit; color: #122d3f; border: 1px solid #8ca7b5; padding: 8px 15px; background: white; cursor: pointer; }
+button:focus-visible { outline: 3px solid #008f80; }
+button:disabled { opacity: .45; cursor: default; }
+aside { position: fixed; inset: 8% 8% 90px; background: #fff; padding: 30px; overflow: auto; box-shadow: 0 0 0 100vmax #0008; z-index: 2; }
+aside[hidden] { display: none; }
+aside h2 { margin-top: 0; }
+aside pre { font: 18px/1.6 Arial, sans-serif; color: #122d3f; }
+@media print {
+ @page { size: landscape; margin: 0; }
+ body, main { background: white; padding: 0; display: block; }
+ .slide, .slide.active { display: flex; width: 100vw; height: 100vh; aspect-ratio: auto; break-after: page; padding: 40px 60px; overflow: visible; }
+ nav, aside { display: none !important; }
+ h1 { font-size: 32pt; } p { font-size: 22pt; } pre { font-size: 16pt; }
+}
+</style></head><body><main><section class="slide cover" aria-label="Слайд 1"><h1>Словари и вложенные коллекции</h1><p>Алгоритмизация и программирование<br>2 курс · Лекция 2<br>Python</p><div class="count">1 / 17</div><template>Функции из первой лекции работают со списком оценок. Теперь соединим оценки с ID, именем и группой студента. Базовые множества уже известны и пригодятся для поиска повторов.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 2"><h1>Результат занятия</h1><p>Выбрать между списком записей и словарём по ID</p><p>Безопасно добавить и удалить запись</p><p>Объяснить разницу копии списка и копии вложенных данных</p><p>Сформировать группировку без потери записей</p><div class="count">2 / 17</div><template>Хранить записи о студентах и выполнять поиск, изменение, фильтрацию и группировку.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 3"><h1>Запись как словарь</h1><p>Одна запись содержит поля с именами</p><p>Схема должна быть одинаковой у всех записей</p><p>get применяется к необязательным полям</p><div class="count">3 / 17</div><template>Словарь связывает ключи со значениями. Одна запись о студенте содержит несколько разных характеристик: ID, имя, группу и список оценок. Имена ключей делают назначение полей явным. Если использовать список [&quot;S01&quot;, &quot;Анна&quot;, &quot;ИС-21&quot;, [4, 5]], придётся помнить смысл каждого индекса. Словарь позволяет обращаться к student[&quot;name&quot;].
+
+Договоритесь об одинаковых ключах во всех записях. В одной записи нельзя использовать name, а в другой full_name, если функции ожидают единую схему. Схема — это описание обязательных полей и их типов. Пока мы соблюдаем её вручную; позднее проверка станет частью класса.
+
+Квадратные скобки подходят для обязательного поля: отсутствие ключа означает, что данные нарушают договорённость. get удобен для необязательного поля, когда отсутствие предусмотрено. Не следует заменять каждое обращение на get: это может скрыть ошибку в названии ключа и отложить проблему до другого участка программы.
+
+Вопрос: Когда отсутствие name должно считаться ошибкой?
+Ответ: Когда name является обязательным полем принятой схемы.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide code" aria-label="Слайд 4"><h1>Запись как словарь · пример</h1><pre><code>student = {&quot;id&quot;: &quot;S01&quot;, &quot;name&quot;: &quot;Анна&quot;,
+           &quot;group&quot;: &quot;ИС-21&quot;, &quot;grades&quot;: [4, 5]}
+print(student[&quot;name&quot;])
+print(student.get(&quot;email&quot;, &quot;не указан&quot;))
+student[&quot;grades&quot;].append(3)
+print(student[&quot;grades&quot;])</code></pre><div class="count">4 / 17</div><template>Ожидаемый вывод:
+Анна
+не указан
+[4, 5, 3]
+
+Когда отсутствие name должно считаться ошибкой?
+Когда name является обязательным полем принятой схемы.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 5"><h1>Словарь записей по ID</h1><p>ID не зависит от имени студента</p><p>Присваивание существующему ключу заменяет запись</p><p>Добавление требует проверки дубликата</p><div class="count">5 / 17</div><template>У разных студентов могут совпадать имена. Поэтому имя не подходит как надёжный идентификатор. В учебном журнале используем отдельный строковый ID. Внешний словарь связывает ID с записью: book[&quot;S01&quot;] возвращает конкретного студента. Число в строке и число как int — разные ключи, поэтому единый тип ID принципиален.
+
+Вставка book[id] = record заменяет старое значение, если ключ уже существует. Для учебного журнала такое молчаливое обновление опасно: можно потерять оценки. Сначала проверяем наличие ключа. На этой лекции функция возвращает bool, а в семестровой работе позже будет установлен контракт с ValueError. Контракт учебного упражнения не следует автоматически переносить в итоговое API.
+
+Для поиска по ID словарь удобнее полного перебора списка. Но для поиска по части имени всё равно нужно просмотреть записи. Выбор структуры зависит от наиболее частых операций, а не от того, какая конструкция выглядит короче.
+
+Вопрос: Почему нельзя использовать фамилию как уникальный ключ?
+Ответ: У разных людей бывают одинаковые фамилии, а фамилия одного человека может измениться.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide code" aria-label="Слайд 6"><h1>Словарь записей по ID · пример</h1><pre><code>def add_record(book, record):
+    key = record[&quot;id&quot;]
+    if key in book:
+        return False
+    book[key] = record
+    return True
+
+book = {}
+print(add_record(book, {&quot;id&quot;: &quot;S01&quot;, &quot;name&quot;: &quot;Анна&quot;}))
+print(add_record(book, {&quot;id&quot;: &quot;S01&quot;, &quot;name&quot;: &quot;Борис&quot;}))
+print(book[&quot;S01&quot;][&quot;name&quot;])</code></pre><div class="count">6 / 17</div><template>Ожидаемый вывод:
+True
+False
+Анна
+
+Почему нельзя использовать фамилию как уникальный ключ?
+У разных людей бывают одинаковые фамилии, а фамилия одного человека может измениться.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 7"><h1>Поиск и фильтрация</h1><p>Фильтрация создаёт список подходящих записей</p><p>Пустой список означает отсутствие совпадений</p><p>Правило сравнения строк задаётся явно</p><div class="count">7 / 17</div><template>Поиск по условию строится знакомым циклом: просмотреть элементы, проверить условие, добавить подходящие в новый список. Фильтрация не должна менять исходную коллекцию. В примере требуется точное совпадение группы: ИС-21 и ис-21 считаются разными строками, пока явно не задано правило нормализации.
+
+Обсудите отличие пустого результата от ошибки. Если в группе нет студентов, пустой список является нормальным ответом. Вызывающий код решит, показать ли сообщение «Записей нет». Возвращать иногда список, а иногда строку «не найдено» неудобно: каждый потребитель будет вынужден разбирать два несвязанных типа.
+
+Списковое включение способно записать ту же операцию короче, но сначала важно понять обычный цикл. На практике допустимы оба варианта. Критерий — студент может объяснить условие включения записи и предсказать результат для пустого входа.
+
+Вопрос: Будут ли словари внутри result независимыми копиями?
+Ответ: Нет. Новый только внешний список, его элементы ссылаются на исходные словари.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide code" aria-label="Слайд 8"><h1>Поиск и фильтрация · пример</h1><pre><code>def select_group(students, group):
+    result = []
+    for student in students:
+        if student[&quot;group&quot;] == group:
+            result.append(student)
+    return result
+
+rows = [{&quot;name&quot;: &quot;Анна&quot;, &quot;group&quot;: &quot;A&quot;},
+        {&quot;name&quot;: &quot;Борис&quot;, &quot;group&quot;: &quot;B&quot;}]
+print(select_group(rows, &quot;A&quot;))</code></pre><div class="count">8 / 17</div><template>Ожидаемый вывод:
+[{&#x27;name&#x27;: &#x27;Анна&#x27;, &#x27;group&#x27;: &#x27;A&#x27;}]
+
+Будут ли словари внутри result независимыми копиями?
+Нет. Новый только внешний список, его элементы ссылаются на исходные словари.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 9"><h1>Изменение и удаление записи</h1><p>Изменяется конкретное поле найденной записи</p><p>Сначала собираются ключи для массового удаления</p><p>Подтверждение пользователя относится к интерфейсу</p><div class="count">9 / 17</div><template>Перед изменением нужно определить, какую запись меняем и что делать, если её нет. В учебном примере сначала используем membership-проверку key in book. Затем изменяем конкретное поле. Удаление через del удаляет связь ключа и записи во внешнем словаре. Оно не означает автоматического удаления всех других ссылок на этот объект.
+
+Нельзя бездумно удалять элементы словаря во время обхода того же словаря: меняется размер коллекции, что нарушает обход. Если задача — удалить несколько записей по условию, сначала соберите их ключи в отдельный список, затем выполните удаление по этому списку. Так алгоритм остаётся понятным.
+
+В интерфейсе перед удалением потребуется подтверждение пользователя. Однако вычислительная функция не должна спрашивать подтверждение через input. Интерфейс получает ответ, после чего вызывает функцию удаления. Эта граница сохраняется и при переходе к классам.
+
+Вопрос: Зачем нужен отдельный список keys?
+Ответ: Он позволяет менять book, не меняя коллекцию, по которой сейчас выполняется обход.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide code" aria-label="Слайд 10"><h1>Изменение и удаление записи · пример</h1><pre><code>book = {&quot;1&quot;: {&quot;name&quot;: &quot;Анна&quot;, &quot;group&quot;: &quot;A&quot;},
+        &quot;2&quot;: {&quot;name&quot;: &quot;Борис&quot;, &quot;group&quot;: &quot;B&quot;}}
+book[&quot;1&quot;][&quot;group&quot;] = &quot;B&quot;
+keys = [key for key in book if book[key][&quot;name&quot;] == &quot;Борис&quot;]
+for key in keys:
+    del book[key]
+print(book)</code></pre><div class="count">10 / 17</div><template>Ожидаемый вывод:
+{&#x27;1&#x27;: {&#x27;name&#x27;: &#x27;Анна&#x27;, &#x27;group&#x27;: &#x27;B&#x27;}}
+
+Зачем нужен отдельный список keys?
+Он позволяет менять book, не меняя коллекцию, по которой сейчас выполняется обход.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 11"><h1>Группировка и подсчёт</h1><p>Ключ группировки выбирается по задаче</p><p>Первое появление ключа требует начального значения</p><p>Счётчик и список решают разные задачи</p><div class="count">11 / 17</div><template>Группировка отличается от фильтрации: нам нужны все группы сразу. Создаём словарь, в котором ключом будет название группы, а значением — список её студентов. При первом появлении группы создаём пустой список. Затем добавляем запись в список соответствующей группы.
+
+Частотный подсчёт использует ту же идею, но хранит число вместо списка. Если ключа ещё нет, счётчик начинается с нуля. Выражение counts.get(group, 0) + 1 удобно показывает начальное значение. Важно не создавать пустой список повторно на каждой итерации: это уничтожило бы уже накопленные записи.
+
+Группировка полезна для отчётов: количество студентов по группам, распределение товаров по категориям, число заявок каждого статуса. Сначала отделяем формирование данных от их печати. Тогда одна функция может использоваться для текстового отчёта и дальнейшего экспорта.
+
+Вопрос: Как изменить этот алгоритм, чтобы хранить имена по группам?
+Ответ: Создавать для новой группы список и добавлять в него имя вместо увеличения числа.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide code" aria-label="Слайд 12"><h1>Группировка и подсчёт · пример</h1><pre><code>students = [{&quot;name&quot;: &quot;Анна&quot;, &quot;group&quot;: &quot;A&quot;},
+            {&quot;name&quot;: &quot;Борис&quot;, &quot;group&quot;: &quot;B&quot;},
+            {&quot;name&quot;: &quot;Вера&quot;, &quot;group&quot;: &quot;A&quot;}]
+counts = {}
+for student in students:
+    group = student[&quot;group&quot;]
+    counts[group] = counts.get(group, 0) + 1
+print(counts)</code></pre><div class="count">12 / 17</div><template>Ожидаемый вывод:
+{&#x27;A&#x27;: 2, &#x27;B&#x27;: 1}
+
+Как изменить этот алгоритм, чтобы хранить имена по группам?
+Создавать для новой группы список и добавлять в него имя вместо увеличения числа.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 13"><h1>Поверхностная копия и вложенные списки</h1><p>copy не копирует вложенные объекты</p><p>Независимость проверяется после изменения копии</p><p>Известную схему можно скопировать явно</p><div class="count">13 / 17</div><template>Копия словаря создаёт новый внешний контейнер, но не копирует вложенный список оценок. Поэтому student.copy()[&quot;grades&quot;].append(2) изменит список, который доступен и через исходную запись. Это не ошибка метода copy: он выполняет поверхностное копирование по своему контракту.
+
+Когда схема небольшая и известна, удобно собрать новую запись явно и отдельно скопировать grades. Это показывает, какие данные должны быть независимыми. Существует deepcopy для рекурсивного копирования, но в текущей задаче он скрывает важное для обучения устройство данных. Сначала разберём ручной вариант.
+
+При проверке копирования недостаточно сравнить две записи сразу после создания. Они должны быть равны по содержимому. Затем измените вложенную коллекцию одной записи и убедитесь, что другая осталась прежней. Именно второй шаг выявляет совместное использование списка.
+
+Вопрос: Какой тест обнаружит поверхностную копию вместо нужной независимой?
+Ответ: Добавить оценку в copied и проверить, что original[&quot;grades&quot;] не изменился.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide code" aria-label="Слайд 14"><h1>Поверхностная копия и вложенные списки · пример</h1><pre><code>original = {&quot;id&quot;: &quot;1&quot;, &quot;grades&quot;: [4, 5]}
+copied = {&quot;id&quot;: original[&quot;id&quot;],
+          &quot;grades&quot;: original[&quot;grades&quot;].copy()}
+copied[&quot;grades&quot;].append(2)
+print(original)
+print(copied)</code></pre><div class="count">14 / 17</div><template>Ожидаемый вывод:
+{&#x27;id&#x27;: &#x27;1&#x27;, &#x27;grades&#x27;: [4, 5]}
+{&#x27;id&#x27;: &#x27;1&#x27;, &#x27;grades&#x27;: [4, 5, 2]}
+
+Какой тест обнаружит поверхностную копию вместо нужной независимой?
+Добавить оценку в copied и проверить, что original[&quot;grades&quot;] не изменился.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 15"><h1>Упорядоченный отчёт</h1><p>sorted создаёт новый список</p><p>key задаёт правило сравнения</p><p>Второй ключ разрешает совпадения первого</p><div class="count">15 / 17</div><template>Порядок добавления записей не всегда совпадает с порядком удобного отчёта. Для вывода используем sorted с функцией key. Она вычисляет значение, по которому сравниваются записи. В примере основным ключом является имя без учёта регистра, дополнительным — ID. Дополнительный ключ делает порядок однозначным при одинаковых именах.
+
+sorted возвращает новый список, поэтому исходная коллекция не перестраивается. Это особенно полезно, если входом являются значения словаря. У строки casefold назначение связано с сравнением без учёта регистра; исходное имя при этом можно сохранить для вывода.
+
+В учебном журнале применяется лексикографическое сравнение строк Python. Это не полноценная библиотечная сортировка по правилам русского алфавита для всех языковых особенностей. Достаточно явного простого правила, одинакового в программе, задании и тестах.
+
+Вопрос: Что произойдёт при одинаковых именах после casefold?
+Ответ: Порядок определит строковый ID, второй элемент кортежа ключа.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide code" aria-label="Слайд 16"><h1>Упорядоченный отчёт · пример</h1><pre><code>rows = [{&quot;id&quot;: &quot;2&quot;, &quot;name&quot;: &quot;анна&quot;},
+        {&quot;id&quot;: &quot;1&quot;, &quot;name&quot;: &quot;Анна&quot;},
+        {&quot;id&quot;: &quot;3&quot;, &quot;name&quot;: &quot;Борис&quot;}]
+ordered = sorted(rows, key=lambda row: (row[&quot;name&quot;].casefold(), row[&quot;id&quot;]))
+print([row[&quot;id&quot;] for row in ordered])</code></pre><div class="count">16 / 17</div><template>Ожидаемый вывод:
+[&#x27;1&#x27;, &#x27;2&#x27;, &#x27;3&#x27;]
+
+Что произойдёт при одинаковых именах после casefold?
+Порядок определит строковый ID, второй элемент кортежа ключа.
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section><section class="slide text" aria-label="Слайд 17"><h1>Самопроверка и практика</h1><p>Почему нельзя использовать фамилию как уникальный ключ?</p><p>Как изменить этот алгоритм, чтобы хранить имена по группам?</p><p>Практики 3 и 4: применение материала</p><div class="count">17 / 17</div><template>Добавьте к справочнику фильтр по группе и отчёт с числом студентов по группам. Приведите примеры пустого результата и одинаковых имён. Объясните, какие контейнеры ваша программа изменяет.
+
+Справочники:
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict
+
+Учебный конспект: lectures/02/README.md
+https://docs.python.org/3/tutorial/datastructures.html#dictionaries
+https://docs.python.org/3/library/stdtypes.html#mapping-types-dict</template></section></main><nav aria-label="Управление презентацией"><button id="prev" aria-label="Предыдущий слайд">← Назад</button><span id="status" aria-live="polite"></span><button id="next" aria-label="Следующий слайд">Далее →</button><button id="notes" aria-expanded="false">Заметки (N)</button><button id="full">Полный экран (F)</button></nav><aside hidden aria-label="Заметки преподавателя"><button id="close">Закрыть</button><h2>Заметки преподавателя</h2><pre id="note-text"></pre></aside><script>
+const slides = [...document.querySelectorAll('.slide')];
+let index = Math.max(0, Math.min(slides.length-1, (parseInt(location.hash.slice(1),10)||1)-1));
+const notes = document.querySelector('aside');
+function show() {
+ slides.forEach((s,i)=>{s.classList.toggle('active',i===index); s.setAttribute('aria-hidden', i===index?'false':'true');});
+ document.querySelector('#status').textContent = `${index+1} / ${slides.length}`;
+ document.querySelector('#prev').disabled=index===0;
+ document.querySelector('#next').disabled=index===slides.length-1;
+ document.querySelector('#note-text').textContent=slides[index].querySelector('template').content.textContent;
+ history.replaceState(null,'',`#${index+1}`);
+}
+function move(delta){index=Math.max(0,Math.min(slides.length-1,index+delta));show();}
+function toggleNotes(){notes.hidden=!notes.hidden;document.querySelector('#notes').setAttribute('aria-expanded',String(!notes.hidden));}
+function fullscreen(){if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.();}
+document.querySelector('#prev').onclick=()=>move(-1);
+document.querySelector('#next').onclick=()=>move(1);
+document.querySelector('#notes').onclick=toggleNotes;
+document.querySelector('#close').onclick=toggleNotes;
+document.querySelector('#full').onclick=fullscreen;
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!notes.hidden){toggleNotes();return;}
+ if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();move(1);}
+ if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();move(-1);}
+ if(e.key.toLowerCase()==='n')toggleNotes();
+ if(e.key.toLowerCase()==='f')fullscreen();
+});
+show();
+</script></body></html>

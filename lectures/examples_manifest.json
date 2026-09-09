@@ -1,0 +1,198 @@
+[
+  {
+    "path": "lectures/01/examples/section_01.py",
+    "stdout": "2\n"
+  },
+  {
+    "path": "lectures/01/examples/section_02.py",
+    "stdout": "4.666666666666667\nNone\n"
+  },
+  {
+    "path": "lectures/01/examples/section_03.py",
+    "stdout": "Средний балл: 4.67\nнет оценок\n"
+  },
+  {
+    "path": "lectures/01/examples/section_04.py",
+    "stdout": "[3, 4, 5]\n[4, 5]\n"
+  },
+  {
+    "path": "lectures/01/examples/section_05.py",
+    "stdout": "[4, 5]\n[4, 5, 3]\n"
+  },
+  {
+    "path": "lectures/01/examples/section_06.py",
+    "stdout": "{'count': 3, 'average': 3.6666666666666665, 'debt': True}\n"
+  },
+  {
+    "path": "lectures/01/examples/section_07.py",
+    "stdout": "3 проверки выполнены\n"
+  },
+  {
+    "path": "lectures/02/examples/section_01.py",
+    "stdout": "Анна\nне указан\n[4, 5, 3]\n"
+  },
+  {
+    "path": "lectures/02/examples/section_02.py",
+    "stdout": "True\nFalse\nАнна\n"
+  },
+  {
+    "path": "lectures/02/examples/section_03.py",
+    "stdout": "[{'name': 'Анна', 'group': 'A'}]\n"
+  },
+  {
+    "path": "lectures/02/examples/section_04.py",
+    "stdout": "{'1': {'name': 'Анна', 'group': 'B'}}\n"
+  },
+  {
+    "path": "lectures/02/examples/section_05.py",
+    "stdout": "{'A': 2, 'B': 1}\n"
+  },
+  {
+    "path": "lectures/02/examples/section_06.py",
+    "stdout": "{'id': '1', 'grades': [4, 5]}\n{'id': '1', 'grades': [4, 5, 2]}\n"
+  },
+  {
+    "path": "lectures/02/examples/section_07.py",
+    "stdout": "['1', '2', '3']\n"
+  },
+  {
+    "path": "lectures/03/examples/section_01.py",
+    "stdout": "Анна Иванова\n''\n"
+  },
+  {
+    "path": "lectures/03/examples/section_02.py",
+    "stdout": "['Анна', 'Антон']\n[]\n"
+  },
+  {
+    "path": "lectures/03/examples/section_03.py",
+    "stdout": "['кот', 'пёс', 'кот']\n"
+  },
+  {
+    "path": "lectures/03/examples/section_04.py",
+    "stdout": "{'кот': 2, 'пёс': 1}\n3 2\n"
+  },
+  {
+    "path": "lectures/03/examples/section_05.py",
+    "stdout": "[('кот', 3), ('дом', 2)]\n"
+  },
+  {
+    "path": "lectures/03/examples/section_06.py",
+    "stdout": "['Анна', 'Борис']\n"
+  },
+  {
+    "path": "lectures/03/examples/section_07.py",
+    "stdout": "Проверка нормализации завершена\n"
+  },
+  {
+    "path": "lectures/04/examples/section_01.py",
+    "stdout": "journal.json\n.json\ndata\n"
+  },
+  {
+    "path": "lectures/04/examples/section_02.py",
+    "stdout": "{\"name\": \"Анна\", \"grades\": [4, 5], \"active\": true}\nTrue\n"
+  },
+  {
+    "path": "lectures/04/examples/section_03.py",
+    "stdout": "['Анна']\n"
+  },
+  {
+    "path": "lectures/04/examples/section_04.py",
+    "stdout": "Анна; староста\n6\n"
+  },
+  {
+    "path": "lectures/04/examples/section_05.py",
+    "stdout": "name;average\nАнна;4.67\n"
+  },
+  {
+    "path": "lectures/04/examples/section_06.py",
+    "stdout": "True\nFalse\n"
+  },
+  {
+    "path": "lectures/04/examples/section_07.py",
+    "stdout": "[4]\n[4, 5]\n"
+  },
+  {
+    "path": "lectures/05/examples/section_01.py",
+    "stdout": "ValueError\nНужно целое число, например 5\n"
+  },
+  {
+    "path": "lectures/05/examples/section_02.py",
+    "stdout": "4\nЛогическое значение отклонено\n"
+  },
+  {
+    "path": "lectures/05/examples/section_03.py",
+    "stdout": "4\nВведите целое число от 2 до 5\nВведите целое число от 2 до 5\n"
+  },
+  {
+    "path": "lectures/05/examples/section_04.py",
+    "stdout": "Обычный, граничный и пустой случаи проверены\n"
+  },
+  {
+    "path": "lectures/05/examples/section_05.py",
+    "stdout": "2 True\n"
+  },
+  {
+    "path": "lectures/05/examples/section_06.py",
+    "stdout": "[4]\n"
+  },
+  {
+    "path": "lectures/05/examples/section_07.py",
+    "stdout": "Файловая проверка выполнена\n"
+  },
+  {
+    "path": "lectures/06/examples/section_01.py",
+    "stdout": "Анна [5]\nБорис []\n"
+  },
+  {
+    "path": "lectures/06/examples/section_02.py",
+    "stdout": "4.5\nNone\n"
+  },
+  {
+    "path": "lectures/06/examples/section_03.py",
+    "stdout": "Анна Иванова\nПустое имя отклонено\n"
+  },
+  {
+    "path": "lectures/06/examples/section_04.py",
+    "stdout": "[5] []\n"
+  },
+  {
+    "path": "lectures/06/examples/section_05.py",
+    "stdout": "S01\n"
+  },
+  {
+    "path": "lectures/06/examples/section_06.py",
+    "stdout": "{'name': 'Анна'}\n"
+  },
+  {
+    "path": "lectures/06/examples/section_07.py",
+    "stdout": "Метод изменил состояние по контракту\n"
+  },
+  {
+    "path": "lectures/07/examples/section_01.py",
+    "stdout": "journal/models.py : Student и GradeBook\njournal/storage.py : JSON и CSV\njournal/__main__.py : консольное меню\ntests/test_own.py : собственные тесты\n"
+  },
+  {
+    "path": "lectures/07/examples/section_02.py",
+    "stdout": "Здесь запускается интерфейс\n"
+  },
+  {
+    "path": "lectures/07/examples/section_03.py",
+    "stdout": "Отчёт пока пуст\nНеизвестная команда\nВыход\n"
+  },
+  {
+    "path": "lectures/07/examples/section_04.py",
+    "stdout": "Есть изменения: True\nПосле сохранения: False\n"
+  },
+  {
+    "path": "lectures/07/examples/section_05.py",
+    "stdout": "Загрузка отменена\n['Анна']\n"
+  },
+  {
+    "path": "lectures/07/examples/section_06.py",
+    "stdout": "1. Проверить версию Python\n2. Перейти в каталог с папкой journal\n3. Выполнить python -m journal\n4. Выполнить публичные и собственные тесты\n"
+  },
+  {
+    "path": "lectures/07/examples/section_07.py",
+    "stdout": "Максимум: 100\n"
+  }
+]

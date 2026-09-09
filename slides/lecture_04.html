@@ -1,0 +1,280 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Хранение данных в JSON и CSV</title><style>
+:root { color-scheme: light; font-family: Arial, sans-serif; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #e8edf0; color: #122d3f; }
+main { min-height: 100vh; display: grid; place-items: center; padding: 24px 24px 72px; }
+.slide { display: none; width: min(1180px, 100%); aspect-ratio: 16 / 9; padding: 5% 6%; background: #fafbfc; overflow: auto; }
+.slide.active { display: flex; flex-direction: column; }
+.slide.cover { background: #122d3f; color: #fff; justify-content: center; }
+h1 { font-size: clamp(26px, 3.4vw, 48px); line-height: 1.16; margin: 0 0 34px; }
+.cover h1 { font-size: clamp(30px, 4.4vw, 62px); }
+p { font-size: clamp(20px, 2.4vw, 34px); line-height: 1.4; margin: 0 0 22px; }
+pre { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: clamp(15px, 1.8vw, 27px)/1.38 'Courier New', monospace; color: #174b5b; }
+.count { margin-top: auto; padding-top: 20px; font-size: 16px; color: #657e8c; }
+.cover .count { color: #a9cad6; }
+nav { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; padding: 10px; background: #fff; border-top: 1px solid #c9d5dc; }
+button { font: inherit; color: #122d3f; border: 1px solid #8ca7b5; padding: 8px 15px; background: white; cursor: pointer; }
+button:focus-visible { outline: 3px solid #008f80; }
+button:disabled { opacity: .45; cursor: default; }
+aside { position: fixed; inset: 8% 8% 90px; background: #fff; padding: 30px; overflow: auto; box-shadow: 0 0 0 100vmax #0008; z-index: 2; }
+aside[hidden] { display: none; }
+aside h2 { margin-top: 0; }
+aside pre { font: 18px/1.6 Arial, sans-serif; color: #122d3f; }
+@media print {
+ @page { size: landscape; margin: 0; }
+ body, main { background: white; padding: 0; display: block; }
+ .slide, .slide.active { display: flex; width: 100vw; height: 100vh; aspect-ratio: auto; break-after: page; padding: 40px 60px; overflow: visible; }
+ nav, aside { display: none !important; }
+ h1 { font-size: 32pt; } p { font-size: 22pt; } pre { font-size: 16pt; }
+}
+</style></head><body><main><section class="slide cover" aria-label="Слайд 1"><h1>Хранение данных в JSON и CSV</h1><p>Алгоритмизация и программирование<br>2 курс · Лекция 4<br>Python</p><div class="count">1 / 17</div><template>Файлы знакомы по первому курсу. Теперь задача — хранить согласованную структуру записей, а не произвольные строки. Используем словари и очистку текста из предыдущих лекций.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 2"><h1>Результат занятия</h1><p>Выбрать JSON для вложенных данных и CSV для таблицы</p><p>Прочитать и записать UTF-8 файл с помощью with</p><p>Преобразовать строки CSV в числа</p><p>Разделить чтение файла и проверку структуры данных</p><div class="count">2 / 17</div><template>Сохранять состояние программы между запусками и формировать табличные отчёты.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 3"><h1>Состояние программы и файл</h1><p>Память процесса не сохраняется после выхода</p><p>JSON хранит структуру, CSV представляет таблицу</p><p>Относительный путь зависит от рабочего каталога</p><div class="count">3 / 17</div><template>Словарь существует в памяти запущенной программы. После завершения процесса он не восстанавливается автоматически. Сохранение переводит данные в последовательность символов или байтов, а загрузка выполняет обратное преобразование. Это называется сериализацией и десериализацией.
+
+Перед выбором формата определяем назначение файла. Если нужно сохранить студентов с разным количеством оценок, удобна вложенная структура JSON. Если нужно передать итоговый отчёт в табличный редактор, удобен CSV: одна строка на студента, одинаковые столбцы. Один и тот же формат не обязан решать обе задачи.
+
+Путь к файлу также является входным значением. Относительный путь отсчитывается от текущего рабочего каталога процесса, а не автоматически от расположения Python-файла. Поэтому в инструкции запуска обязательно указываем каталог. В переносимых программах используем pathlib, чтобы не собирать пути вручную через слеши.
+
+Вопрос: Почему один и тот же относительный путь может открыть разные файлы?
+Ответ: Программу могут запустить из разных рабочих каталогов.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide code" aria-label="Слайд 4"><h1>Состояние программы и файл · пример</h1><pre><code>from pathlib import Path
+
+base = Path(&quot;data&quot;)
+path = base / &quot;journal.json&quot;
+print(path.name)
+print(path.suffix)
+print(path.parent.name)</code></pre><div class="count">4 / 17</div><template>Ожидаемый вывод:
+journal.json
+.json
+data
+
+Почему один и тот же относительный путь может открыть разные файлы?
+Программу могут запустить из разных рабочих каталогов.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 5"><h1>JSON и типы данных</h1><p>dumps создаёт JSON-строку, loads разбирает её</p><p>ensure_ascii=False сохраняет читаемую кириллицу</p><p>Корректный JSON может содержать неверные учебные данные</p><div class="count">5 / 17</div><template>JSON описывает объекты, массивы, строки, числа, логические значения и null. В Python им соответствуют словари, списки, строки, числа, bool и None. Для учебного формата используем только строковые ключи. Не все объекты Python можно напрямую сохранить: экземпляр собственного класса потребуется сначала преобразовать в словарь.
+
+json.dumps превращает структуру Python в строку, а json.loads разбирает строку. Параметр ensure_ascii=False оставляет русские буквы читаемыми. Без него данные также можно восстановить, но текст файла будет содержать escape-последовательности. indent делает структуру удобной для чтения человеком и просмотра изменений в Git.
+
+Синтаксически корректный JSON ещё не гарантирует правильность данных. Объект {&quot;grades&quot;: [9]} успешно разбирается, но нарушает шкалу оценок. Поэтому после разбора следует отдельная проверка полей. Сначала изучаем преобразование формата, а на следующей лекции оформим обработку ошибок.
+
+Вопрос: Можно ли считать оценки верными только потому, что loads завершился успешно?
+Ответ: Нет. loads проверяет формат JSON, а диапазон оценок относится к правилам приложения.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide code" aria-label="Слайд 6"><h1>JSON и типы данных · пример</h1><pre><code>import json
+
+student = {&quot;name&quot;: &quot;Анна&quot;, &quot;grades&quot;: [4, 5], &quot;active&quot;: True}
+text = json.dumps(student, ensure_ascii=False)
+print(text)
+restored = json.loads(text)
+print(restored == student)</code></pre><div class="count">6 / 17</div><template>Ожидаемый вывод:
+{&quot;name&quot;: &quot;Анна&quot;, &quot;grades&quot;: [4, 5], &quot;active&quot;: true}
+True
+
+Можно ли считать оценки верными только потому, что loads завершился успешно?
+Нет. loads проверяет формат JSON, а диапазон оценок относится к правилам приложения.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 7"><h1>Чтение и запись UTF-8</h1><p>Кодировка указывается явно</p><p>Режим w заменяет содержимое</p><p>Проверка включает повторное чтение</p><div class="count">7 / 17</div><template>При работе с текстовыми файлами явно задаём encoding=&quot;utf-8&quot;. Это делает обработку русских букв одинаковой на разных системах. Конструкция with закрывает файл при выходе из блока, включая случай исключения. Для коротких текстов pathlib предлагает read_text и write_text с тем же явным указанием кодировки.
+
+Режим w заменяет содержимое существующего файла. Поэтому учебная демонстрация использует временный каталог, а рабочее приложение должно явно сообщать, какой файл сохраняется. Режим a добавляет текст в конец и не подходит для сохранения единственного JSON-документа: несколько документов подряд не образуют один корректный документ.
+
+Проверку сохранения выполняем полным циклом: создать данные, записать, прочитать, сравнить. Недостаточно убедиться, что файл появился. Он может содержать неполные данные или неверную кодировку. Сравниваем структуры, а не форматирование пробелов в JSON.
+
+Вопрос: Почему режим a не подходит для обычного файла журнала JSON?
+Ответ: При повторном сохранении появятся два документа подряд вместо одного документа принятого формата.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide code" aria-label="Слайд 8"><h1>Чтение и запись UTF-8 · пример</h1><pre><code>import json
+import tempfile
+from pathlib import Path
+
+with tempfile.TemporaryDirectory() as folder:
+    path = Path(folder) / &quot;data.json&quot;
+    path.write_text(json.dumps([&quot;Анна&quot;], ensure_ascii=False), encoding=&quot;utf-8&quot;)
+    loaded = json.loads(path.read_text(encoding=&quot;utf-8&quot;))
+    print(loaded)</code></pre><div class="count">8 / 17</div><template>Ожидаемый вывод:
+[&#x27;Анна&#x27;]
+
+Почему режим a не подходит для обычного файла журнала JSON?
+При повторном сохранении появятся два документа подряд вместо одного документа принятого формата.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 9"><h1>CSV и разделители</h1><p>Разделитель задаётся явно</p><p>DictReader использует имена из заголовка</p><p>Значения CSV нужно преобразовывать из строк</p><div class="count">9 / 17</div><template>CSV хранит строки с одинаковым набором столбцов. Несмотря на название, разделителем может быть точка с запятой. Его необходимо явно согласовать при записи и чтении. Модуль csv умеет экранировать разделитель, кавычки и переводы строк внутри значения. Самостоятельное разбиение через split(&quot;;&quot;) этих правил не учитывает.
+
+DictReader использует заголовок как имена полей и возвращает каждую строку как словарь. Значения при чтении являются строками. Если столбец grade должен содержать число, выполняем отдельное преобразование int и проверку диапазона. Пустая ячейка тоже остаётся строкой, поэтому её смысл нужно определить заранее.
+
+Файлы CSV открываем с newline=&quot;&quot;, чтобы модуль управлял переводами строк. В демонстрации используется StringIO — текстовый поток в памяти. Он позволяет увидеть поведение CSV без создания постоянного файла и пригодится для коротких тестов.
+
+Вопрос: Что сломает split(&quot;;&quot;) в этом примере?
+Ответ: Точка с запятой внутри имени будет ошибочно воспринята как граница столбца.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide code" aria-label="Слайд 10"><h1>CSV и разделители · пример</h1><pre><code>import csv
+import io
+
+source = &#x27;name;grade\n&quot;Анна; староста&quot;;5\n&#x27;
+rows = list(csv.DictReader(io.StringIO(source), delimiter=&quot;;&quot;))
+print(rows[0][&quot;name&quot;])
+print(int(rows[0][&quot;grade&quot;]) + 1)</code></pre><div class="count">10 / 17</div><template>Ожидаемый вывод:
+Анна; староста
+6
+
+Что сломает split(&quot;;&quot;) в этом примере?
+Точка с запятой внутри имени будет ошибочно воспринята как граница столбца.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 11"><h1>Экспорт отчёта</h1><p>fieldnames задаёт порядок столбцов</p><p>Заголовок нужен и пустому отчёту</p><p>Оформление чисел выполняется на границе экспорта</p><div class="count">11 / 17</div><template>При экспорте сначала формируем строки отчёта, затем передаём их DictWriter. Список fieldnames определяет состав и порядок столбцов. writeheader записывает заголовок даже при отсутствии строк. Благодаря этому пустой отчёт остаётся корректной таблицей известной структуры.
+
+Числовое среднее удобно вычислять без округления, а в отчёте преобразовывать в строку с двумя знаками. Для отсутствия оценок используем пустую ячейку. Логическое поле долга в семестровом формате записывается как yes или no. Это заранее согласованные значения, а не результат случайного преобразования bool в строку.
+
+Не изменяйте исходный словарь отчёта только ради оформления CSV, если другие части программы ещё используют числовые значения. Создайте отдельную строку или копию. Так экспорт не превратит данные приложения из чисел в строки.
+
+Вопрос: Зачем сохранять заголовок, если в отчёте нет студентов?
+Ответ: Он сообщает структуру таблицы и позволяет прочитать пустой отчёт обычным CSV-парсером.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide code" aria-label="Слайд 12"><h1>Экспорт отчёта · пример</h1><pre><code>import csv
+import io
+
+stream = io.StringIO(newline=&quot;&quot;)
+writer = csv.DictWriter(stream, fieldnames=[&quot;name&quot;, &quot;average&quot;], delimiter=&quot;;&quot;)
+writer.writeheader()
+writer.writerow({&quot;name&quot;: &quot;Анна&quot;, &quot;average&quot;: f&quot;{14 / 3:.2f}&quot;})
+print(stream.getvalue(), end=&quot;&quot;)</code></pre><div class="count">12 / 17</div><template>Ожидаемый вывод:
+name;average
+Анна;4.67
+
+Зачем сохранять заголовок, если в отчёте нет студентов?
+Он сообщает структуру таблицы и позволяет прочитать пустой отчёт обычным CSV-парсером.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 13"><h1>Версия и схема документа</h1><p>version отличает форматы документа</p><p>Проверка структуры следует после разбора JSON</p><p>Новый журнал заменяет текущий только после успешной загрузки</p><div class="count">13 / 17</div><template>Формат файла со временем может измениться. Небольшое поле version позволяет отличить знакомую структуру от неизвестной. В нашем журнале корневой объект содержит version=1 и список students. При неподдерживаемой версии загрузчик должен сообщить об ошибке, а не пытаться молча угадать смысл полей.
+
+Проверка схемы отвечает на конкретные вопросы: корень является словарём? Есть обязательные поля? students является списком? Каждый элемент содержит ID, имя, группу и оценки? ID уникальны? Для учебного проекта лишние поля также считаются нарушением, чтобы контракт оставался однозначным.
+
+В примере показываем простую диагностическую проверку корня. Полная проверка будет частью семестровой работы. Не загружайте часть правильных записей, молча пропуская неправильные: пользователь решит, что восстановлен весь журнал. Сначала проверяем новый объект полностью, затем заменяем им текущее состояние.
+
+Вопрос: Почему проверка версии включает type(...) is int?
+Ответ: True сравнивается равным 1, но логическое значение не является допустимым номером версии по контракту.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide code" aria-label="Слайд 14"><h1>Версия и схема документа · пример</h1><pre><code>def valid_root(data):
+    return (isinstance(data, dict)
+            and set(data) == {&quot;version&quot;, &quot;students&quot;}
+            and type(data[&quot;version&quot;]) is int
+            and data[&quot;version&quot;] == 1
+            and isinstance(data[&quot;students&quot;], list))
+
+print(valid_root({&quot;version&quot;: 1, &quot;students&quot;: []}))
+print(valid_root({&quot;version&quot;: True, &quot;students&quot;: []}))</code></pre><div class="count">14 / 17</div><template>Ожидаемый вывод:
+True
+False
+
+Почему проверка версии включает type(...) is int?
+True сравнивается равным 1, но логическое значение не является допустимым номером версии по контракту.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 15"><h1>Проверка полного цикла</h1><p>Проверяется содержимое после загрузки</p><p>Нужны ошибки синтаксиса и ошибки схемы</p><p>Демонстрационные данные сохраняются отдельно от рабочих</p><div class="count">15 / 17</div><template>Полный цикл сохранения и загрузки проверяет взаимодействие преобразований. Создайте вход, сохраните, загрузите и сравните структуру. Затем измените восстановленные данные и убедитесь, что это не влияет на исходный объект в памяти. Сериализация создаёт новые контейнеры при разборе, что удобно для независимого состояния.
+
+Кроме удачного сценария нужны пустой документ принятой схемы, отсутствующий файл, повреждённый синтаксис и неверная оценка внутри правильного JSON. Эти случаи относятся к разным уровням проверки. Пока обсуждаем ожидаемое поведение словами; следующая лекция даст механизм исключений и автоматических тестов.
+
+Рабочие файлы пользователей и учебные примеры следует разделять. Пример в репозитории должен оставаться неизменным, чтобы на него можно было сослаться в задании. Результаты студента сохраняются в его рабочем каталоге, который не требуется включать в исходные материалы курса.
+
+Вопрос: Доказывает ли успешный круговой тест, что загрузчик отклоняет неверные данные?
+Ответ: Нет. Для ошибок схемы и повреждённых файлов нужны отдельные отрицательные тесты.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide code" aria-label="Слайд 16"><h1>Проверка полного цикла · пример</h1><pre><code>import json
+
+original = {&quot;version&quot;: 1, &quot;students&quot;: [{&quot;grades&quot;: [4]}]}
+restored = json.loads(json.dumps(original))
+assert restored == original
+restored[&quot;students&quot;][0][&quot;grades&quot;].append(5)
+print(original[&quot;students&quot;][0][&quot;grades&quot;])
+print(restored[&quot;students&quot;][0][&quot;grades&quot;])</code></pre><div class="count">16 / 17</div><template>Ожидаемый вывод:
+[4]
+[4, 5]
+
+Доказывает ли успешный круговой тест, что загрузчик отклоняет неверные данные?
+Нет. Для ошибок схемы и повреждённых файлов нужны отдельные отрицательные тесты.
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section><section class="slide text" aria-label="Слайд 17"><h1>Самопроверка и практика</h1><p>Можно ли считать оценки верными только потому, что loads завершился успешно?</p><p>Зачем сохранять заголовок, если в отчёте нет студентов?</p><p>Практики 7 и 8: применение материала</p><div class="count">17 / 17</div><template>Добавьте JSON-сохранение справочника и CSV-экспорт отчёта. Проверьте русские имена, пустой справочник и значение с точкой с запятой. Опишите формат в README и приведите короткий пример файла.
+
+Справочники:
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html
+
+Учебный конспект: lectures/04/README.md
+https://docs.python.org/3/library/json.html
+https://docs.python.org/3/library/csv.html
+https://docs.python.org/3/library/pathlib.html</template></section></main><nav aria-label="Управление презентацией"><button id="prev" aria-label="Предыдущий слайд">← Назад</button><span id="status" aria-live="polite"></span><button id="next" aria-label="Следующий слайд">Далее →</button><button id="notes" aria-expanded="false">Заметки (N)</button><button id="full">Полный экран (F)</button></nav><aside hidden aria-label="Заметки преподавателя"><button id="close">Закрыть</button><h2>Заметки преподавателя</h2><pre id="note-text"></pre></aside><script>
+const slides = [...document.querySelectorAll('.slide')];
+let index = Math.max(0, Math.min(slides.length-1, (parseInt(location.hash.slice(1),10)||1)-1));
+const notes = document.querySelector('aside');
+function show() {
+ slides.forEach((s,i)=>{s.classList.toggle('active',i===index); s.setAttribute('aria-hidden', i===index?'false':'true');});
+ document.querySelector('#status').textContent = `${index+1} / ${slides.length}`;
+ document.querySelector('#prev').disabled=index===0;
+ document.querySelector('#next').disabled=index===slides.length-1;
+ document.querySelector('#note-text').textContent=slides[index].querySelector('template').content.textContent;
+ history.replaceState(null,'',`#${index+1}`);
+}
+function move(delta){index=Math.max(0,Math.min(slides.length-1,index+delta));show();}
+function toggleNotes(){notes.hidden=!notes.hidden;document.querySelector('#notes').setAttribute('aria-expanded',String(!notes.hidden));}
+function fullscreen(){if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{});else document.exitFullscreen?.();}
+document.querySelector('#prev').onclick=()=>move(-1);
+document.querySelector('#next').onclick=()=>move(1);
+document.querySelector('#notes').onclick=toggleNotes;
+document.querySelector('#close').onclick=toggleNotes;
+document.querySelector('#full').onclick=fullscreen;
+document.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!notes.hidden){toggleNotes();return;}
+ if(e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();move(1);}
+ if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();move(-1);}
+ if(e.key.toLowerCase()==='n')toggleNotes();
+ if(e.key.toLowerCase()==='f')fullscreen();
+});
+show();
+</script></body></html>

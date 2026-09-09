@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "students": [
+    {
+      "id": "X",
+      "name": "Ошибка",
+      "group": "ИС-21",
+      "grades": [
+        6
+      ]
+    }
+  ]
+}
